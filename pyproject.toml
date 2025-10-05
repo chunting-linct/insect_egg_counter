@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "my_package"
+version = "0.1.0"
+description = "A minimal example package"
+authors = [
+  { name = "Your Name", email = "you@example.com" }
+]
+
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
