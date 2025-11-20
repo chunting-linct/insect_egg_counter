@@ -2,7 +2,7 @@ import cv2
 from cv2.cuda import ensureSizeIsEnough
 import numpy as np
 import os
-path = "Pictures/Pictures"
+path = "b3"
 
 def estimate_offset(img1, img2):
     img1 = cv2.imread(img1, cv2.IMREAD_GRAYSCALE)
@@ -22,7 +22,12 @@ offset_list = []
 for i, file in enumerate(file_list):
     if i > 0:
         offx, offy = estimate_offset(os.path.join(path, file_list[i - 1]),os.path.join(path, file_list[i]))
+        print(file_list[i], offx, offy)
         offset_list.append((int(offx), int(offy)))
+
+"""
+
+
 x = 0
 y = 0
 min_x , min_y, max_x, max_y = 0, 0, 0, 0
@@ -101,4 +106,6 @@ for i, file in enumerate(file_list):
 
 #mosaic = mosaic / np.maximum(weight, 1e-25)
 
-cv2.imwrite("mosica_sample.jpg", mosaic)
+cv2.imwrite("mosica_b3.jpg", mosaic)
+"""
+
