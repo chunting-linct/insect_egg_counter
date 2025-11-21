@@ -13,3 +13,7 @@ authors = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.setuptools.packages.find]
+include = ["egg_counter", "egg_counter.*"]  # explicitly include your package
+exclude = ["Pictures", "tests"]
