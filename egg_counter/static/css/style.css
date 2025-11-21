@@ -1,0 +1,40 @@
+.cross-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows:     1fr 1fr 1fr;
+  gap: 10px; /* spacing between images */
+  width: 300px;           /* adjust as you want */
+  margin: 0 auto;         /* center on page */
+}
+
+/* Place each item in the 3×3 grid */
+.top {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+}
+
+.left {
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+}
+
+.center {
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+}
+
+.right {
+  grid-column: 3 / 4;
+  grid-row: 2 / 3;
+}
+
+.bottom {
+  grid-column: 2 / 3;
+  grid-row: 3 / 4;
+}
+
+.item {
+  width: 100%;
+  border-radius: 8px;
+}
+

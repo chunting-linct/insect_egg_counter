@@ -1,5 +1,12 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <meta charset="UTF-8">
+    <title>Egg Counter</title>
+
+    <!-- Import your CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
 <body style="font-family: sans-serif">
 
   <h2>Video Stream</h2>
@@ -8,17 +15,100 @@
        src="/video_feed"
        style="width: 100%; max-width: 500px; border-radius: 12px;">
 
-  <h3>Controls</h3>
-  <button onclick="send('start')">Start</button>
-  <button onclick="send('stop')">Stop</button>
 
+  <div class="cross-grid">
+  <div class="cell top">
+      <button onclick="move_up()">↑</button>
+      <button onclick="set_up()">Set Boundary</button>
+      <img src="/static/icons/up.png">
+  </div>
+
+  <div class="cell left">
+      <button onclick="move_left()">←</button>
+      <button onclick="set_left()">Set Boundary</button>
+      <img src="/static/icons/left.png">
+  </div>
+
+<img src="/static/icons/center.png" class="cell center">
+  </img>
+
+  <div class="cell right">
+      <button onclick="move_right()">→</button>
+      <button onclick="set_right()">Set Boundary</button>
+      <img src="/static/icons/right.png">
+  </div>
+
+  <div class="cell bottom">
+      <button onclick="move_down()">↓</button>
+      <button onclick="set_down()">Set Boundary</button>
+      <img src="/static/icons/down.png">
+  </div>
+</div>
   <script>
-    function send(cmd) {
-      fetch("/api/action", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ command: cmd })
-      });
+    const steps = 50
+    function move_up(cmd) {
+	fetch(`/x/pos/${steps}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log("Response:", data);
+      })
+      .catch(err => console.error(err));
+    }
+    function move_down(cmd) {
+	fetch(`/x/neg/${steps}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log("Response:", data);
+      })
+      .catch(err => console.error(err));
+    }
+    function move_left(cmd) {
+	fetch(`/y/neg/${steps}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log("Response:", data);
+      })
+      .catch(err => console.error(err));
+    }
+    function move_right(cmd) {
+	fetch(`/y/pos/${steps}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log("Response:", data);
+      })
+      .catch(err => console.error(err));
+    }
+    function set_up(cmd) {
+	fetch(`/x/pos/set`)
+      .then(response => response.json())
+      .then(data => {
+        console.log("Response:", data);
+      })
+      .catch(err => console.error(err));
+    }
+    function set_down(cmd) {
+	fetch(`/x/neg/set`)
+      .then(response => response.json())
+      .then(data => {
+        console.log("Response:", data);
+      })
+      .catch(err => console.error(err));
+    }
+    function set_left(cmd) {
+	fetch(`/y/neg/set`)
+      .then(response => response.json())
+      .then(data => {
+        console.log("Response:", data);
+      })
+      .catch(err => console.error(err));
+    }
+    function set_right(cmd) {
+	fetch(`/y/pos/set`)
+      .then(response => response.json())
+      .then(data => {
+        console.log("Response:", data);
+      })
+      .catch(err => console.error(err));
     }
   </script>
 
