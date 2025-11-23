@@ -9,45 +9,49 @@
 </head>
 <body style="font-family: sans-serif">
 
-  <h2>Video Stream</h2>
+<div class="horizontal">
 
   <img id="stream" 
        src="/video_feed"
-       style="width: 100%; max-width: 500px; border-radius: 12px;">
-
+       style="width: 100%; max-width: 640px; border-radius: 12px;">
+  <div>
 
   <div class="cross-grid">
   <div class="cell top">
       <button onclick="move_up()">↑</button>
       <button onclick="set_up()">Set Boundary</button>
-      <img src="/static/icons/up.png">
+      <img id="top_boundary" src="/static/boundary/up_boundary.jpg" style="display: none; width: 100px">
   </div>
 
   <div class="cell left">
       <button onclick="move_left()">←</button>
       <button onclick="set_left()">Set Boundary</button>
-      <img src="/static/icons/left.png">
+      <img id="left_boundary" src="/static/boundary/left_boundary.jpg" style="display:none; width: 100px">
   </div>
 
-<img src="/static/icons/center.png" class="cell center">
+<img src="/static/device.jpg" class="cell center" style="width:100px">
   </img>
 
   <div class="cell right">
       <button onclick="move_right()">→</button>
       <button onclick="set_right()">Set Boundary</button>
-      <img src="/static/icons/right.png">
+      <img id="right_boundary" src="/static/boundary/right_boundary.jpg" style="display: none; width: 100px">
   </div>
 
   <div class="cell bottom">
       <button onclick="move_down()">↓</button>
       <button onclick="set_down()">Set Boundary</button>
-      <img src="/static/icons/down.png">
+      <img id="bottom_boundary" src="/static/boundary/down_boundary.jpg" style="display: none; width: 100px">
+  </div>
+</div>
+
+<button class="center_button" onclick="start_scan()">Start Capture</button>
   </div>
 </div>
   <script>
     const steps = 50
     function move_up(cmd) {
-	fetch(`/x/pos/${steps}`)
+	fetch(`/x/neg/${steps}`)
       .then(response => response.json())
       .then(data => {
         console.log("Response:", data);
@@ -55,7 +59,7 @@
       .catch(err => console.error(err));
     }
     function move_down(cmd) {
-	fetch(`/x/neg/${steps}`)
+	fetch(`/x/pos/${steps}`)
       .then(response => response.json())
       .then(data => {
         console.log("Response:", data);
@@ -79,20 +83,24 @@
       .catch(err => console.error(err));
     }
     function set_up(cmd) {
-	fetch(`/x/pos/set`)
-      .then(response => response.json())
-      .then(data => {
-        console.log("Response:", data);
-      })
-      .catch(err => console.error(err));
-    }
-    function set_down(cmd) {
 	fetch(`/x/neg/set`)
       .then(response => response.json())
       .then(data => {
         console.log("Response:", data);
       })
       .catch(err => console.error(err));
+	const img = document.getElementById("top_boundary");
+        img.style.display = "block";
+    }
+    function set_down(cmd) {
+	fetch(`/x/pos/set`)
+      .then(response => response.json())
+      .then(data => {
+        console.log("Response:", data);
+      })
+      .catch(err => console.error(err));
+	const img = document.getElementById("bottom_boundary");
+        img.style.display = "block";
     }
     function set_left(cmd) {
 	fetch(`/y/neg/set`)
@@ -101,11 +109,26 @@
         console.log("Response:", data);
       })
       .catch(err => console.error(err));
+	const img = document.getElementById("left_boundary");
+        img.style.display = "block";
     }
     function set_right(cmd) {
 	fetch(`/y/pos/set`)
       .then(response => response.json())
       .then(data => {
+        console.log("Response:", data);
+      })
+      .catch(err => console.error(err));
+	const img = document.getElementById("right_boundary");
+        img.style.display = "block";
+    }
+    function start_scan(cmd) {
+	fetch(`/start_scan`)
+      .then(response => response.json())
+      .then(data => {
+	if (data.error) {
+	     alert("❗ Error: " + data.error);
+        }
         console.log("Response:", data);
       })
       .catch(err => console.error(err));
