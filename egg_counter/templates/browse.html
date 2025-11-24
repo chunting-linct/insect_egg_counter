@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 16px;
+            padding: 20px;
+        }
+
+        .gallery img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 20px;
+        }
+
+        a.button {
+            background: #0078ff;
+            color: white;
+            padding: 10px 14px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a.button:hover {
+            background: #005ccc;
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="/" class="button">⬅ Back to Control</a>
+    <a href="/download_all" class="button">⬇ Download All</a>
+</div>
+
+<h2 style="padding-left: 20px;">Image Gallery</h2>
+
+<div class="gallery">
+    {% for img in images %}
+    <div>
+        <img src="/static/result_pictures/{{ img }}" alt="{{ img }}">
+    </div>
+    {% endfor %}
+</div>
+
+</body>
+</html>
+
