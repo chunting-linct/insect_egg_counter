@@ -1,6 +1,8 @@
+from logging import shutdown
 import time
 import os 
 import numpy as np
+import shutil
 try:
 
     from picamera2 import Picamera2
@@ -103,11 +105,8 @@ class PiHardware:
         flag = 1
         i = 1000
         if os.path.exists(path):
-            for file in os.listdir(path):
-                os.remove(os.path.join(path, file))
-        else:
-            os.mkdir(path)
-        self.move_to_start_point()
+            shutil.rmtree(path)
+        os.mkdir(path)
         x_step_list, y_step_list = self.calculate_step_list()
 
         for y_step in y_step_list:
