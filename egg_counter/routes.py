@@ -62,26 +62,39 @@ def y_neg(steps):
 def y_pos_set():
     
     pi_hardware.y_pos_boundary= pi_hardware.current_y
+    pi_hardware.camera.capture_file('egg_counter/static/boundary/right_boundary.jpg')
 
     return {"status": "ok", "y": pi_hardware.y_pos_boundary}
 @app.route("/y/neg/set")
 def y_neg_set():
     
     pi_hardware.y_neg_boundary= pi_hardware.current_y
+    pi_hardware.camera.capture_file('egg_counter/static/boundary/left_boundary.jpg')
 
     return {"status": "ok", "y": pi_hardware.y_neg_boundary}
 @app.route("/x/pos/set")
 def x_pos_set():
     
     pi_hardware.x_pos_boundary= pi_hardware.current_x
+    pi_hardware.camera.capture_file('egg_counter/static/boundary/down_boundary.jpg')
 
     return {"status": "ok", "x": pi_hardware.x_pos_boundary}
 @app.route("/x/neg/set")
 def x_neg_set():
     
+    
     pi_hardware.x_neg_boundary= pi_hardware.current_x
+    pi_hardware.camera.capture_file('egg_counter/static/boundary/up_boundary.jpg')
 
     return {"status": "ok", "x": pi_hardware.x_neg_boundary}
+@app.route("/start_scan")
+def start_scan():
+    error = pi_hardware.move_to_start_point()
+    if error :
+        return error
+    pi_hardware.scan_and_capture('Pictures')
+    return {"status": "ok"}
+    
 @app.route("/")
 def index():
     return render_template("index.html")
