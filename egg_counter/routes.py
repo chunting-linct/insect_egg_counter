@@ -1,8 +1,9 @@
-from flask import current_app as app, render_template, Response
+from flask import current_app as app, render_template, Response, send_file
 from PIL import Image
-from .scan_capture import *
 from .pi_hardware import PiHardware
 import io
+import os
+import zipfile
 
 pi_hardware = PiHardware()
 
@@ -92,9 +93,35 @@ def start_scan():
     error = pi_hardware.move_to_start_point()
     if error :
         return error
-    pi_hardware.scan_and_capture('Pictures')
+    folder = os.path.join(app.root_path, "static/result_pictures")
+    pi_hardware.scan_and_capture(folder)
     return {"status": "ok"}
     
 @app.route("/")
 def index():
     return render_template("index.html")
+@app.route("/browse")
+def browse():
+    folder = os.path.join(app.root_path, "static/result_pictures")
+    images =  [file for file in os.listdir(folder) if file.endswith('.jpg')]
+    return render_template("browse.html", images=images)
+
+@app.route("/download_all")
+def download_all():
+
+    folder = os.path.join(app.root_path, "static/result_pictures")
+    # Create zip file in memory
+    zip_buffer = io.BytesIO()
+    with zipfile.ZipFile(zip_buffer, "w") as z:
+        for filename in os.listdir(folder):
+            full_path = os.path.join(folder, filename)
+            z.write(full_path, arcname=filename)
+
+    zip_buffer.seek(0)
+
+    return send_file(
+        zip_buffer,
+        as_attachment=True,
+        download_name="images.zip",
+        mimetype="application/zip",
+    )
