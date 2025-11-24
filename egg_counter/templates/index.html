@@ -46,6 +46,7 @@
 </div>
 
 <button class="center_button" onclick="start_scan()">Start Capture</button>
+<a href="/browse" class="center_button">See Results</a>
   </div>
 </div>
   <script>
@@ -87,40 +88,44 @@
       .then(response => response.json())
       .then(data => {
         console.log("Response:", data);
-      })
-      .catch(err => console.error(err));
 	const img = document.getElementById("top_boundary");
         img.style.display = "block";
+	img.src = "/static/boundary/up_boundary.jpg?ts=" + Date.now();
+      })
+      .catch(err => console.error(err));
     }
     function set_down(cmd) {
 	fetch(`/x/pos/set`)
       .then(response => response.json())
       .then(data => {
         console.log("Response:", data);
-      })
-      .catch(err => console.error(err));
 	const img = document.getElementById("bottom_boundary");
         img.style.display = "block";
+	img.src = "/static/boundary/down_boundary.jpg?ts=" + Date.now();
+      })
+      .catch(err => console.error(err));
     }
     function set_left(cmd) {
 	fetch(`/y/neg/set`)
       .then(response => response.json())
       .then(data => {
         console.log("Response:", data);
-      })
-      .catch(err => console.error(err));
 	const img = document.getElementById("left_boundary");
         img.style.display = "block";
+	img.src = "/static/boundary/left_boundary.jpg?ts=" + Date.now();
+      })
+      .catch(err => console.error(err));
     }
     function set_right(cmd) {
 	fetch(`/y/pos/set`)
       .then(response => response.json())
       .then(data => {
         console.log("Response:", data);
-      })
-      .catch(err => console.error(err));
 	const img = document.getElementById("right_boundary");
         img.style.display = "block";
+	img.src = "/static/boundary/right_boundary.jpg?ts=" + Date.now();
+      })
+      .catch(err => console.error(err));
     }
     function start_scan(cmd) {
 	fetch(`/start_scan`)
@@ -133,6 +138,7 @@
       })
       .catch(err => console.error(err));
     }
+
   </script>
 
 </body>
