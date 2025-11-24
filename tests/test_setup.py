@@ -1,3 +1,13 @@
-from my_package import add_one
+from egg_counter.pi_hardware import PiHardware
+
+
 def test_add_one():
-    assert add_one(1) == 2
+    pi_hardware = PiHardware()
+    pi_hardware.x_neg_boundary= -1
+    pi_hardware.y_neg_boundary= -1
+    pi_hardware.x_pos_boundary= 50
+    pi_hardware.y_pos_boundary= 40
+    
+    x_step, y_step = pi_hardware.calculate_step_list()
+    assert x_step == [50, 1]
+    assert y_step == [30, 11]
