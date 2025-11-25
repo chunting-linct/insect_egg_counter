@@ -2,7 +2,7 @@ import cv2
 from cv2.cuda import ensureSizeIsEnough
 import numpy as np
 import os
-path = "b3"
+path = "images"
 
 def estimate_offset(img1, img2):
     img1 = cv2.imread(img1, cv2.IMREAD_GRAYSCALE)
@@ -11,6 +11,11 @@ def estimate_offset(img1, img2):
     shift, _ = cv2.phaseCorrelate(np.float32(img1), np.float32(img2))
     return shift
 
+def name_generator(row, col):
+    return str(row).zfill(4) + '_' + str(col).zfill(4) + '.jpg'
+
+
+
 
 file_list = [file for file in os.listdir(path)]
 file_list.sort()
@@ -18,29 +23,82 @@ h = 480
 w = 640
 
 offset_list = []
-
-for i, file in enumerate(file_list):
-    if i > 0:
-        offx, offy = estimate_offset(os.path.join(path, file_list[i - 1]),os.path.join(path, file_list[i]))
-        print(file_list[i], offx, offy)
-        offset_list.append((int(offx), int(offy)))
-
-"""
+count = 1
 
 
-x = 0
-y = 0
+axis_list = []
+col_ref = (110, -20)
+row_ref = (-15, -64)
+
+for file in file_list:
+    name_part = file.split('.')[0]
+    row = int(name_part.split('_')[0])
+    col = int(name_part.split('_')[1])
+    if col == 0:
+        axis_list.append([])
+        if row == 0:
+            axis_list[-1].append((0, 0))
+        else:
+            file_1 = os.path.join(path, name_generator(row-1, col))
+            file_2= os.path.join(path, file)
+            offx, offy = estimate_offset(file_1, file_2)
+            if abs(offx - row_ref[0]) + abs(offy - row_ref[1]) > 20:
+                offx = row_ref[0]
+                offy = row_ref[1]
+            axis_list[-1].append((axis_list[row-1][col][0] - offx,
+                              axis_list[row-1][col][1] - offy))
+
+
+    if col > 0:
+
+        file_1 = os.path.join(path, name_generator(row, col-1))
+        file_2= os.path.join(path, file)
+        offx, offy = estimate_offset(file_1, file_2)
+        if abs(offx - col_ref[0]) + abs(offy - col_ref[1]) < 20:
+            axis_list[-1].append((axis_list[row][col-1][0] - offx,
+                                  axis_list[row][col-1][1] - offy))
+        else:
+            if row > 0:
+                file_1 = os.path.join(path, name_generator(row-1, col))
+                file_2= os.path.join(path, file)
+                offx, offy = estimate_offset(file_1, file_2)
+                if abs(offx - row_ref[0]) + abs(offy - row_ref[1]) < 20:
+                    axis_list[-1].append((axis_list[row-1][col][0] - offx,
+                                      axis_list[row-1][col][1] - offy))
+                else:
+                    axis_list[-1].append((axis_list[row][col-1][0] - col_ref[0],
+                                          axis_list[row][col-1][1] - col_ref[1]))
+            else:
+                axis_list[-1].append((axis_list[row][col-1][0] - col_ref[0],
+                                      axis_list[row][col-1][1] - col_ref[1]))
+
+
+
+        
+
+
+
+
+
+
+        
+
+
+
+for i, row in enumerate(axis_list):
+    for j, cell in enumerate(row):
+        axis_list[i][j] = (int(axis_list[i][j][0]), int(axis_list [i][j][1]))
+
 min_x , min_y, max_x, max_y = 0, 0, 0, 0
-axis_list = [(0, 0)]
-for offset in offset_list:
-    x -= offset[0]
-    y -= offset[1]
-    max_x = max(max_x, x)
-    max_y = max(max_y, y)
-    min_x = min(min_x, x)
-    min_y = min(min_y, y)
-    axis_list.append((x, y))
-axis_list = [(axis[0] - min_x, axis[1] - min_y) for axis in axis_list]
+for row in axis_list:
+    for cell in row:
+        max_x = max(max_x, cell[0])
+        max_y = max(max_y, cell[1])
+        min_x = min(min_x, cell[0])
+        min_y = min(min_y, cell[1])
+for i, row in enumerate(axis_list):
+    for j, cell in enumerate(row):
+        axis_list[i][j] = (cell[0] - min_x, cell[1] - min_y)
 mosaic = np.zeros((max_y - min_y + h, max_x - min_x + w, 3), dtype=np.float32)
 weight = np.zeros((max_y - min_y + h, max_x - min_x + w, 3), dtype=np.float32)
 winner = -np.ones((max_y - min_y + h, max_x - min_x + w), dtype=np.float32)
@@ -51,7 +109,10 @@ mask = (1 - np.abs(x)) * (1 - np.abs(y))
 mask = mask 
 mask = np.clip(mask, 0, 1).astype(np.float32)
 mask_3 = np.stack([mask, mask, mask], axis=-1)
-for i, file in enumerate(file_list):
+for file in file_list:
+    name_part = file.split('.')[0]
+    row = int(name_part.split('_')[0])
+    col = int(name_part.split('_')[1])
 
     img = cv2.imread(os.path.join(path, file))
     if img is None:
@@ -64,7 +125,7 @@ for i, file in enumerate(file_list):
     img_corrected = img_f / (illum / (illum_mean + 1e-6))
 
     img = np.clip(img_corrected, 0, 255).astype(np.uint8)
-    x, y = axis_list[i]
+    x, y = axis_list[row][col]
     W = winner[y : y + 480, x : x + 640] 
     winner_mask = mask > W
     edge_mask = np.abs(mask - W) < 0.0005
@@ -104,8 +165,6 @@ for i, file in enumerate(file_list):
 
     M[edge_mask_3] = img[edge_mask_3] * edge_zero_3[edge_mask_3] + M[edge_mask_3] * (1 - edge_zero_3[edge_mask_3])
 
-#mosaic = mosaic / np.maximum(weight, 1e-25)
 
-cv2.imwrite("mosica_b3.jpg", mosaic)
-"""
+cv2.imwrite("mosaic_image2.jpg", mosaic)
 
