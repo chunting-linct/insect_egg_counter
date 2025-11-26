@@ -9,5 +9,5 @@ def test_add_one():
     pi_hardware.y_pos_boundary= 40
     
     x_step, y_step = pi_hardware.calculate_step_list()
-    assert x_step == [50, 1]
-    assert y_step == [30, 11]
+    assert x_step == [50, 50]
+    assert y_step == [50]

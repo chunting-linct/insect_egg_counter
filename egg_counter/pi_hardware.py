@@ -82,19 +82,19 @@ class PiHardware:
         x_length = self.x_pos_boundary - self.x_neg_boundary
         y_length = self.y_pos_boundary - self.y_neg_boundary
         x_default_step = 50
-        y_default_step = 30
+        y_default_step = 50
         x_step_list = []
         y_step_list = []
 
         while x_length > x_default_step:
             x_step_list.append(x_default_step)
             x_length -= x_default_step
-        x_step_list.append(x_length)
+        x_step_list.append(x_default_step)
 
         while y_length > y_default_step:
             y_step_list.append(y_default_step)
             y_length -= y_default_step
-        y_step_list.append(y_length)
+        y_step_list.append(y_default_step)
 
 
         return x_step_list, y_step_list
